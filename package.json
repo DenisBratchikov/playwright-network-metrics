@@ -1,0 +1,47 @@
+{
+  "name": "playwright-network-metrics",
+  "version": "0.1.0",
+  "description": "Playwright instrumentation to collect and aggregate network performance metrics across test runs.",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun run build:js && bun run build:types",
+    "build:js": "bun build src/index.ts --outdir dist --target node --format esm --packages=external --external:@playwright/test --external:playwright --sourcemap --entry-naming index.mjs && bun build src/index.ts --outdir dist --target node --format cjs --packages=external --external:@playwright/test --external:playwright --sourcemap --entry-naming index.cjs",
+    "build:types": "tsc --emitDeclarationOnly --declaration --declarationMap false --outDir dist",
+    "lint": "bun x eslint . --ext .ts,.tsx",
+    "test": "bun test",
+    "test:integration": "bun test src/__tests__/integration.spec.ts"
+  },
+  "keywords": [
+    "playwright",
+    "metrics",
+    "network",
+    "reporter",
+    "performance"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "@playwright/test": ">=1.40.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.43.1",
+    "@types/node": "^20.11.30",
+    "@types/micromatch": "^4.0.9",
+    "bun-types": "1.2.14",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "playwright": "^1.43.1",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "micromatch": "^4.0.5"
+  }
+}

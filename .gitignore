@@ -1,0 +1,6 @@
+node_modules
+/dist
+.network-metrics-results
+coverage
+npm-debug.log*
+.DS_Store
