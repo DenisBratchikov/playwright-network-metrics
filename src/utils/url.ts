@@ -31,6 +31,10 @@ export function redactUrl(url: string, config: NetworkMetricsConfig): string {
   }
 }
 
+/**
+ * Normalize a URL while respecting redaction and query allow/deny rules.
+ * Used for the “normalized endpoint” aggregation key.
+ */
 export function normalizeUrl(url: string, config: NetworkMetricsConfig): string {
   const redacted = redactUrl(url, config);
   try {

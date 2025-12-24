@@ -8,6 +8,11 @@ export interface NetworkMetricsFixture {
   instrumentContext: (context: BrowserContext, meta?: { specFile?: string; testTitle?: string }) => () => void;
 }
 
+/**
+ * Wrap a Playwright base test with network metrics instrumentation.
+ * Users can skip this helper and instead instantiate `NetworkMetricsCollector`
+ * manually inside their own fixtures to mirror this behavior.
+ */
 export function withNetworkMetrics<T extends TestType<any, any>>(baseTest: T = base as unknown as T, config: NetworkMetricsConfig = {}): T & { networkMetrics: NetworkMetricsFixture } {
   const resolvedConfig = { outputDir: 'network-metrics-results', ...config };
   return baseTest.extend<{ networkMetrics: NetworkMetricsFixture }>({

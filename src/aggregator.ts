@@ -120,6 +120,9 @@ export class NetworkMetricsAggregator {
     this.config = { html: false, reportScope: 'run', outputDir: 'network-metrics-results', topN: 5, ...config };
   }
 
+  /**
+   * Record a single completed request event and fold it into all configured aggregations.
+   */
   record(event: RequestEvent) {
     this.events.push(event);
     this.totals.totalRequests += 1;
@@ -171,6 +174,9 @@ export class NetworkMetricsAggregator {
     other.exportReport();
   }
 
+  /**
+   * Produce sorted aggregation buckets for JSON/HTML output.
+   */
   private summarizeBuckets(
     map: Map<string, DurationBucket>,
     opts?: { topN?: number; parseMethod?: boolean; parseResource?: boolean }
@@ -252,6 +258,9 @@ export class NetworkMetricsAggregator {
     return [...this.events];
   }
 
+  /**
+   * Re-ingest a previously persisted batch of request events (e.g., from a worker file).
+   */
   consumeEvents(events: RequestEvent[]) {
     for (const event of events) {
       this.record(event);

@@ -9,6 +9,9 @@ function looksLikeId(segment: string): boolean {
   return false;
 }
 
+/**
+ * Apply user-specified grouping rules (regex/glob/predicate) before heuristics.
+ */
 export function applyRouteRules(url: string, config: NetworkMetricsConfig): string | undefined {
   if (!config.routeRules) return undefined;
   for (const rule of config.routeRules) {
@@ -19,6 +22,12 @@ export function applyRouteRules(url: string, config: NetworkMetricsConfig): stri
   return undefined;
 }
 
+/**
+ * Derive a route-group key for aggregations. The default heuristic:
+ * - strips query params
+ * - rewrites id-like path segments to `:id`
+ * - falls back to the raw path on parse errors
+ */
 export function deriveRouteGroup(url: string, config: NetworkMetricsConfig): string {
   if (config.routeGroupFn) return config.routeGroupFn(url);
   const rule = applyRouteRules(url, config);

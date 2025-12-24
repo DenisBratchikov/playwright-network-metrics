@@ -55,6 +55,39 @@ await testInfo.attach('network-metrics', {
 });
 ```
 
+## Custom fixture example (manual instrumentation)
+
+If you prefer to wire the collector yourself instead of using `withNetworkMetrics`, you can extend Playwright’s base test directly:
+
+```ts
+import { test as base } from '@playwright/test';
+import { NetworkMetricsCollector } from 'playwright-network-metrics';
+
+export const test = base.extend<{
+  networkMetrics: NetworkMetricsCollector;
+}>({
+  networkMetrics: [
+    async ({ context, testInfo }, use) => {
+      const collector = new NetworkMetricsCollector({
+        allowUrlPatterns: ['**/api/**'],
+        normalizeQuery: { allowlist: ['page', 'sort'] },
+      });
+      const cleanup = collector.attachToContext(context, () => ({
+        specFile: testInfo.file,
+        testTitle: testInfo.title,
+      }));
+      await use(collector);
+      cleanup();
+      await collector.writeEvents(`worker-${testInfo.workerIndex}`);
+      await collector.writeReport(`worker-${testInfo.workerIndex}`);
+    },
+    { scope: 'worker' },
+  ],
+});
+```
+
+This mirrors the fixture helper while keeping full control over when contexts are instrumented or skipped.
+
 ## Configuration options
 
 Key options (all optional):

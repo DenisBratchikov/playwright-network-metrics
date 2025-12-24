@@ -15,6 +15,10 @@ export default class NetworkMetricsReporter implements Reporter {
     this.config = { outputDir: 'network-metrics-results', html: false, reportScope: 'run', topN: 5, ...options };
   }
 
+  /**
+   * Merge per-worker event payloads and emit the consolidated report (and optional HTML).
+   * This keeps memory usage low in parallel runs while preserving deterministic output.
+   */
   async onEnd(result: FullResult) {
     const outDir = this.config.outputDir ?? 'network-metrics-results';
     if (!existsSync(outDir)) return;

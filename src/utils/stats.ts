@@ -1,3 +1,7 @@
+/**
+ * Compute an interpolated percentile from a numeric sample set.
+ * For small arrays this exact approach is sufficient and keeps memory footprint predictable.
+ */
 export function percentile(values: number[], p: number): number {
   if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);

@@ -13,6 +13,11 @@ interface TrackingState {
   url: string;
 }
 
+/**
+ * Attempt to obtain a stable request identifier from Playwright internals.
+ * Falls back to a URL + timestamp based key when Playwright does not expose a request id
+ * (for example when running against different driver builds).
+ */
 function getRequestKey(request: Request, startedAt?: number): string {
   const idFn = (request as any).requestId ?? (request as any)._requestId;
   if (typeof idFn === 'function') {
@@ -34,6 +39,10 @@ export class NetworkMetricsCollector {
     this.aggregator = new NetworkMetricsAggregator(this.config);
   }
 
+  /**
+   * Attaches request/response listeners to a Playwright BrowserContext.
+   * Returns a cleanup function for callers that manage their own contexts (e.g., custom fixtures).
+   */
   attachToContext(context: BrowserContext, metaProvider: () => { specFile?: string; testTitle?: string }): () => void {
     const onRequest = (request: Request) => {
       const resourceType = request.resourceType?.() ?? 'other';
@@ -94,6 +103,9 @@ export class NetworkMetricsCollector {
     return this.aggregator;
   }
 
+  /**
+   * Emit the aggregated JSON report to disk in a deterministic, atomic fashion.
+   */
   async writeReport(id: string = randomUUID()): Promise<NetworkMetricsAggregator> {
     const report = this.aggregator.exportReport();
     const outDir = this.config.outputDir ?? 'network-metrics-results';
@@ -105,6 +117,9 @@ export class NetworkMetricsCollector {
     return this.aggregator;
   }
 
+  /**
+   * Persist raw request events for later merging (e.g., reporter-driven aggregation).
+   */
   async writeEvents(id: string = randomUUID()): Promise<string> {
     const events = this.aggregator.exportEvents();
     const outDir = this.config.outputDir ?? 'network-metrics-results';
