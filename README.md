@@ -196,10 +196,10 @@ Only lightweight metadata is kept in memory (no bodies). Aggregations keep durat
 
 2. Run linting and tests locally:
 
-   ```bash
-   bun x eslint . --ext .ts
-   bun test
-   ```
+```bash
+bun x biome check .
+bun test
+```
 
 3. Build the package (emits ESM, CJS, and type declarations):
 
