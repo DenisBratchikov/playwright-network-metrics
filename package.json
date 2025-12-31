@@ -1,0 +1,58 @@
+{
+  "name": "playwright-network-metrics",
+  "version": "0.1.0",
+  "description": "Capture and aggregate network performance metrics in Playwright tests with interactive HTML reports.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DenisBratchikov/playwright-network-metrics.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DenisBratchikov/playwright-network-metrics/issues"
+  },
+  "homepage": "https://github.com/DenisBratchikov/playwright-network-metrics#readme",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean --external @playwright/test",
+    "lint": "biome check .",
+    "lint:fix": "biome check --apply .",
+    "test": "jest",
+    "test:pw": "npx playwright test --config playwright-tests/playwright.config.ts",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "playwright",
+    "network",
+    "metrics",
+    "performance",
+    "reporter",
+    "fixture",
+    "aggregate"
+  ],
+  "author": {
+    "name": "Denis Bratchikov",
+    "url": "https://github.com/DenisBratchikov"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.10",
+    "@playwright/test": "^1.57.0",
+    "@types/jest": "^30.0.0",
+    "@types/micromatch": "^4.0.10",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.30.0"
+  },
+  "dependencies": {
+    "micromatch": "^4.0.8"
+  }
+}
