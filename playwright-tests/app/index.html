@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Test App</title>
+    <style>
+      button {
+        margin: 5px;
+        padding: 10px;
+        cursor: pointer;
+      }
+      .log {
+        margin-top: 20px;
+        font-family: monospace;
+        font-size: 12px;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Advanced Network Metrics Test App</h1>
+    <div id="status">Ready</div>
+
+    <div>
+      <button id="btn-fast">Fast API (Repeatable)</button>
+      <button id="btn-slow">Slow API</button>
+      <button id="btn-post">Post API</button>
+      <button id="btn-error">Error API</button>
+    </div>
+
+    <div>
+      <button id="btn-random-time">Random Time API</button>
+      <button id="btn-random-status">Random Status API</button>
+      <input type="number" id="repeat-count" value="1" min="1" max="10" />
+      <button id="btn-multi-call">Multi Call</button>
+    </div>
+
+    <div class="log" id="log"></div>
+
+    <script>
+      const updateStatus = (text) =>
+        (document.getElementById("status").innerText = text);
+      const log = (text) => {
+        const entry = document.createElement("div");
+        entry.textContent = `${new Date().toLocaleTimeString()}: ${text}`;
+        const logEl = document.getElementById("log");
+        logEl.appendChild(entry);
+        logEl.scrollTop = logEl.scrollHeight;
+      };
+
+      const makeCall = async (url, options = {}) => {
+        log(`Calling ${url}...`);
+        try {
+          const res = await fetch(url, options);
+          log(`Result ${url}: ${res.status}`);
+        } catch (e) {
+          log(`Error ${url}: ${e.message}`);
+        } finally {
+          updateStatus("Ready");
+        }
+      };
+
+      document
+        .getElementById("btn-fast")
+        .addEventListener("click", () => makeCall("/api/fast"));
+      document
+        .getElementById("btn-slow")
+        .addEventListener("click", () => makeCall("/api/slow"));
+      document.getElementById("btn-post").addEventListener("click", () =>
+        makeCall("/api/login", {
+          method: "POST",
+          body: JSON.stringify({ user: "test" }),
+        })
+      );
+      document
+        .getElementById("btn-error")
+        .addEventListener("click", () => makeCall("/api/error"));
+
+      document
+        .getElementById("btn-random-time")
+        .addEventListener("click", () => {
+          const time = Math.floor(Math.random() * 500) + 100;
+          makeCall(`/api/random?time=${time}`);
+        });
+
+      document
+        .getElementById("btn-random-status")
+        .addEventListener("click", () => {
+          const status = Math.random() > 0.5 ? "success" : "error";
+          makeCall(`/api/random?status=${status}`);
+        });
+
+      document
+        .getElementById("btn-multi-call")
+        .addEventListener("click", async () => {
+          const count = parseInt(document.getElementById("repeat-count").value);
+          updateStatus(`Calling ${count} times...`);
+          for (let i = 0; i < count; i++) {
+            await makeCall("/api/fast");
+          }
+          updateStatus("Multi call done");
+        });
+    </script>
+  </body>
+</html>

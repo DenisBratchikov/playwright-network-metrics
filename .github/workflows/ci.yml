@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Unit Tests
+        run: bun run test
+
+      - name: Build
+        run: bun run build
+
+      - name: Playwright Tests
+        run: |
+          bunx playwright install --with-deps chromium
+          bun run test:pw
+
+  version-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check version bump
+        run: |
+          CURRENT_VERSION=$(bun -p "require('./package.json').version")
+          git checkout main
+          MAIN_VERSION=$(bun -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+          echo "Main version: $MAIN_VERSION"
+          if [ "$CURRENT_VERSION" == "$MAIN_VERSION" ]; then
+            echo "Error: Version must be bumped in package.json"
+            exit 1
+          fi
