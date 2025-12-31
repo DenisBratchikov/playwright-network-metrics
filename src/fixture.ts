@@ -1,4 +1,4 @@
-import type { Page, TestInfo, Fixtures } from "@playwright/test";
+import type { Fixtures, Page, TestInfo } from "@playwright/test";
 import { NetworkMetricsCollector } from "./collector";
 import type { NetworkMetricsConfig } from "./types";
 
@@ -25,13 +25,13 @@ import type { NetworkMetricsConfig } from "./types";
  * ```
  */
 export const defineNetworkMetricsFixture: (
-  config?: NetworkMetricsConfig
+  config?: NetworkMetricsConfig,
 ) => Fixtures = async (config?: NetworkMetricsConfig) => {
   return [
     async (
       { page }: { page: Page },
       use: (collector: NetworkMetricsCollector) => Promise<void>,
-      testInfo: TestInfo
+      testInfo: TestInfo,
     ) => {
       // Setup: attach collector to the page
       const collector = new NetworkMetricsCollector(config);

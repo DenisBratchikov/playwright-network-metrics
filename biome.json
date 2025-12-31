@@ -1,13 +1,13 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
+  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true
     }
+  },
+  "files": {
+    "includes": ["src/**/*.ts", "test/**/*.ts", "playwright-tests/**/*.ts"]
   },
   "formatter": {
     "enabled": true,

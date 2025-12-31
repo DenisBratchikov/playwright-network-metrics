@@ -1,5 +1,5 @@
-export { defineNetworkMetricsFixture } from "./fixture";
 export { RESOURCE_TYPES } from "./constants";
+export { defineNetworkMetricsFixture } from "./fixture";
 
 import { NetworkMetricsReporter } from "./reporter";
 /**

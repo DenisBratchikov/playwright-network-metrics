@@ -1,7 +1,7 @@
-import type { Page, Request, Response, BrowserContext } from "@playwright/test";
+import type { BrowserContext, Page, Request, Response } from "@playwright/test";
 import micromatch from "micromatch";
-import type { NetworkMetricsConfig, RequestMetric } from "./types";
 import { RESOURCE_TYPES } from "./constants";
+import type { NetworkMetricsConfig, RequestMetric } from "./types";
 
 /**
  * Orchestrates the collection of network metrics from Playwright Page or BrowserContext.
@@ -38,7 +38,7 @@ export class NetworkMetricsCollector {
    */
   async attach(target: Page | BrowserContext) {
     target.on("requestfinished", (request) =>
-      this.handleRequestFinished(request)
+      this.handleRequestFinished(request),
     );
     target.on("requestfailed", (request) => this.handleRequestFailed(request));
   }
@@ -113,7 +113,7 @@ export class NetworkMetricsCollector {
   private addMetric(
     request: Request,
     response: Response | null,
-    errorText?: string
+    errorText?: string,
   ) {
     const timing = request.timing();
     const urlWithQuery = this.redactUrl(request.url());
@@ -163,7 +163,7 @@ export class NetworkMetricsCollector {
           }
         }
         modifiedUrl = urlObj.toString();
-      } catch (e) {
+      } catch (_e) {
         // Fallback to original if URL is invalid
       }
     }

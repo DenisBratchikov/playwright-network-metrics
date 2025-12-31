@@ -1,9 +1,13 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import type { Reporter, TestCase, TestResult } from "@playwright/test/reporter";
 import { NetworkMetricsAggregator } from "./aggregator";
 import { generateHtmlReport } from "./html-report";
-import type { NetworkMetricsReporterConfig, RequestMetric } from "./types";
+import type {
+  NetworkMetricsReport,
+  NetworkMetricsReporterConfig,
+  RequestMetric,
+} from "./types";
 
 /**
  * A Playwright Reporter that aggregates network metrics from all test runs and generates reports.
@@ -38,7 +42,7 @@ export class NetworkMetricsReporter implements Reporter {
   onTestEnd(test: TestCase, result: TestResult) {
     // Find network metrics attachment if it exists
     const attachment = result.attachments.find(
-      (a) => a.name === "network-metrics"
+      (a) => a.name === "network-metrics",
     );
     if (attachment?.body) {
       try {
@@ -49,10 +53,10 @@ export class NetworkMetricsReporter implements Reporter {
               ...item,
               specFile: test.location.file,
               testName: test.title,
-            }))
+            })),
           );
         }
-      } catch (e) {
+      } catch (_e) {
         // Ignore parsing errors
       }
     }
@@ -91,7 +95,7 @@ export class NetworkMetricsReporter implements Reporter {
   /**
    * Internal helper to trigger HTML report generation.
    */
-  private generateHtml(report: any): string {
+  private generateHtml(report: NetworkMetricsReport): string {
     return generateHtmlReport(report);
   }
 }
