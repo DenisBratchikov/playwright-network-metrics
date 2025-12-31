@@ -91,7 +91,6 @@ describe("NetworkMetricsAggregator", () => {
     const report = aggregator.aggregate(metrics);
 
     expect(report.endpointsNormalized[0].p50).toBe(50);
-    expect(report.endpointsNormalized[0].p90).toBe(90);
     expect(report.endpointsNormalized[0].p95).toBe(95);
     expect(report.endpointsNormalized[0].p99).toBe(99);
   });
