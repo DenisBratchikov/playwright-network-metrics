@@ -1,4 +1,4 @@
-import { test, expect } from "./test-base";
+import { test } from "./test-base";
 
 test.describe("Core Functionality", () => {
   test("should handle basic repetitive calls", async ({ page, waitReady }) => {
@@ -28,7 +28,7 @@ test.describe("Core Functionality", () => {
     // Trigger 5 random time calls
     for (let i = 0; i < 5; i++) {
       const responsePromise = page.waitForResponse((r) =>
-        r.url().includes("/api/random?time=")
+        r.url().includes("/api/random?time="),
       );
       await page.click("#btn-random-time");
       await responsePromise;

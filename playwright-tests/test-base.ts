@@ -36,7 +36,7 @@ test.beforeEach(async ({ page }) => {
 
   await page.route("**/api/random?time=*", async (route) => {
     const url = new URL(route.request().url());
-    const time = parseInt(url.searchParams.get("time") || "0");
+    const time = parseInt(url.searchParams.get("time") || "0", 10);
     await new Promise((resolve) => setTimeout(resolve, time));
     await route.fulfill({
       status: 200,

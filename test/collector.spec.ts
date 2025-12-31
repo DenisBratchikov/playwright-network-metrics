@@ -1,17 +1,17 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: It's ok for the tests */
 import { NetworkMetricsCollector } from "../src/collector";
 
 describe("NetworkMetricsCollector", () => {
-  const createMockRequest = (url: string, resourceType = "fetch") =>
-    ({
-      url: () => url,
-      resourceType: () => resourceType,
-      method: () => "GET",
-      timing: () => ({
-        startTime: Date.now(),
-        responseStart: 50,
-        responseEnd: 100,
-      }),
-    } as any);
+  const createMockRequest = (url: string, resourceType = "fetch") => ({
+    url: () => url,
+    resourceType: () => resourceType,
+    method: () => "GET",
+    timing: () => ({
+      startTime: Date.now(),
+      responseStart: 50,
+      responseEnd: 100,
+    }),
+  });
 
   it("should redact query parameters", () => {
     const collector = new NetworkMetricsCollector({
@@ -19,10 +19,10 @@ describe("NetworkMetricsCollector", () => {
     });
 
     const redacted = (collector as any).redactUrl(
-      "http://example.com/api?user=foo&token=bar&secret=baz"
+      "http://example.com/api?user=foo&token=bar&secret=baz",
     );
     expect(redacted).toBe(
-      "http://example.com/api?user=foo&token=%5BREDACTED%5D&secret=%5BREDACTED%5D"
+      "http://example.com/api?user=foo&token=%5BREDACTED%5D&secret=%5BREDACTED%5D",
     );
   });
 
@@ -33,13 +33,13 @@ describe("NetworkMetricsCollector", () => {
       });
       expect(
         (collector as any).shouldTrack(
-          createMockRequest("http://a.com", "fetch")
-        )
+          createMockRequest("http://a.com", "fetch"),
+        ),
       ).toBe(true);
       expect(
         (collector as any).shouldTrack(
-          createMockRequest("http://a.com", "image")
-        )
+          createMockRequest("http://a.com", "image"),
+        ),
       ).toBe(false);
     });
   });
@@ -52,13 +52,13 @@ describe("NetworkMetricsCollector", () => {
 
       expect(
         (collector as any).shouldTrack(
-          createMockRequest("http://example.com/api/v1/users")
-        )
+          createMockRequest("http://example.com/api/v1/users"),
+        ),
       ).toBe(true);
       expect(
         (collector as any).shouldTrack(
-          createMockRequest("http://example.com/other")
-        )
+          createMockRequest("http://example.com/other"),
+        ),
       ).toBe(false);
     });
 
@@ -68,18 +68,18 @@ describe("NetworkMetricsCollector", () => {
       });
       expect(
         (collector as any).shouldTrack(
-          createMockRequest("http://example.com/api/v1/users")
-        )
+          createMockRequest("http://example.com/api/v1/users"),
+        ),
       ).toBe(true);
       expect(
         (collector as any).shouldTrack(
-          createMockRequest("http://example.com/auth/login")
-        )
+          createMockRequest("http://example.com/auth/login"),
+        ),
       ).toBe(true);
       expect(
         (collector as any).shouldTrack(
-          createMockRequest("http://example.com/other")
-        )
+          createMockRequest("http://example.com/other"),
+        ),
       ).toBe(false);
     });
   });
@@ -94,13 +94,13 @@ describe("NetworkMetricsCollector", () => {
       });
 
       expect((collector as any).getRouteGroup("http://api.com/users/1")).toBe(
-        "Users"
+        "Users",
       );
       expect((collector as any).getRouteGroup("http://api.com/orders/5")).toBe(
-        "Orders"
+        "Orders",
       );
       expect(
-        (collector as any).getRouteGroup("http://api.com/other")
+        (collector as any).getRouteGroup("http://api.com/other"),
       ).toBeUndefined();
     });
 
@@ -111,10 +111,10 @@ describe("NetworkMetricsCollector", () => {
       });
 
       expect((collector as any).getRouteGroup("http://api.com/special/1")).toBe(
-        "Special"
+        "Special",
       );
       expect(
-        (collector as any).getRouteGroup("http://api.com/other")
+        (collector as any).getRouteGroup("http://api.com/other"),
       ).toBeUndefined();
     });
   });

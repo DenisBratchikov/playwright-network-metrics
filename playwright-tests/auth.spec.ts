@@ -1,4 +1,4 @@
-import { test, expect } from "./test-base";
+import { test } from "./test-base";
 
 test.describe("Authentication Flows", () => {
   test.beforeEach(async ({ page }) => {
@@ -6,10 +6,10 @@ test.describe("Authentication Flows", () => {
       route.fulfill({
         status: 200,
         body: JSON.stringify({ token: "secret-token" }),
-      })
+      }),
     );
     await page.route("**/api/auth/logout", (route) =>
-      route.fulfill({ status: 204 })
+      route.fulfill({ status: 204 }),
     );
   });
 
@@ -19,11 +19,11 @@ test.describe("Authentication Flows", () => {
     // Simulate login calls
     for (const user of ["user1", "user2"]) {
       const responsePromise = page.waitForResponse((r) =>
-        r.url().includes(`/api/auth/login?token=${user}`)
+        r.url().includes(`/api/auth/login?token=${user}`),
       );
       await page.evaluate(
         (u) => fetch(`/api/auth/login?token=${u}`, { method: "POST" }),
-        user
+        user,
       );
       await responsePromise;
     }
@@ -36,7 +36,7 @@ test.describe("Authentication Flows", () => {
     // Check random status
     for (let i = 0; i < 4; i++) {
       const responsePromise = page.waitForResponse((r) =>
-        r.url().includes("/api/random?status=")
+        r.url().includes("/api/random?status="),
       );
       await page.click("#btn-random-status");
       await responsePromise;
@@ -47,7 +47,7 @@ test.describe("Authentication Flows", () => {
   test("should handle failed auth attempts", async ({ page }) => {
     await page.goto("/");
     await page.route("**/api/auth/login", (route) =>
-      route.fulfill({ status: 401 })
+      route.fulfill({ status: 401 }),
     );
 
     for (let i = 0; i < 3; i++) {

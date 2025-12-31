@@ -1,5 +1,5 @@
 import { NetworkMetricsAggregator } from "../src/aggregator";
-import { RequestMetric } from "../src/types";
+import type { RequestMetric } from "../src/types";
 
 describe("NetworkMetricsAggregator", () => {
   it("should aggregate metrics correctly", () => {

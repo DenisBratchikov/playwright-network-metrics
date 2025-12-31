@@ -1,14 +1,14 @@
-import { test, expect } from "./test-base";
+import { test } from "./test-base";
 
 test.describe("User Management", () => {
   test("should track user listing and creation", async ({ page }) => {
     await page.goto("/");
 
     await page.route("**/api/users/list", (route) =>
-      route.fulfill({ status: 200 })
+      route.fulfill({ status: 200 }),
     );
     await page.route("**/api/users/create", (route) =>
-      route.fulfill({ status: 201 })
+      route.fulfill({ status: 201 }),
     );
 
     // Multiple list calls
@@ -27,7 +27,7 @@ test.describe("User Management", () => {
     await page.goto("/");
 
     await page.route("**/api/users/*", (route) =>
-      route.fulfill({ status: 200 })
+      route.fulfill({ status: 200 }),
     );
 
     for (const id of [1, 2, 3, 4, 5]) {
