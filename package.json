@@ -1,6 +1,6 @@
 {
   "name": "playwright-network-metrics",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Capture and aggregate network performance metrics in Playwright tests with interactive HTML reports.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
