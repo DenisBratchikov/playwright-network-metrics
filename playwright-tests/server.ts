@@ -40,7 +40,7 @@ serve({
       const filePath = path.join(
         import.meta.dirname,
         "app",
-        pathname.replace(/^\//, "")
+        pathname.replace(/^\//, ""),
       );
       if (fs.existsSync(filePath)) {
         const ext = path.extname(filePath);
