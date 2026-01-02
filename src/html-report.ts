@@ -32,8 +32,8 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
             --text-muted: #7f8c8d;
             --border: #e1e8ed;
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: var(--text); margin: 0; padding: 20px; background: var(--bg); }
-        .container { max-width: 1200px; margin: 0 auto; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: var(--text); margin: 0; padding: 20px 80px; background: var(--bg); }
+        .container { margin: 0 auto; }
         h1 { color: var(--secondary); margin-bottom: 30px; font-weight: 700; }
         
         .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
@@ -52,32 +52,24 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         .tab:hover { background: #f8f9fa; }
         .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .table-wrapper { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: visible; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
-        th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); }
-        th:first-child { border-top-left-radius: 12px; }
-        th:last-child { border-top-right-radius: 12px; }
-        tr:last-child td:first-child { border-bottom-left-radius: 12px; }
-        tr:last-child td:last-child { border-bottom-right-radius: 12px; }
-        th { background: #f8fafc; font-weight: 700; color: var(--secondary); font-size: 0.85rem; text-transform: uppercase; cursor: pointer; position: relative; }
-        th:hover { background: #f1f5f9; }
+        .grid-wrapper { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
+        .grid-table { overflow-x: auto; }
+        .grid-header, .grid-row { display: grid; grid-template-columns: minmax(300px, 4fr) 110px 100px 120px 100px 100px 100px 155px 120px; align-items: center; border-bottom: 1px solid var(--border); }
+        .grid-header { background: #f8fafc; font-weight: 700; color: var(--secondary); font-size: 0.85rem; text-transform: uppercase; width: fit-content; }
+        .grid-cell { padding: 14px 18px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .grid-header .grid-cell { cursor: pointer; position: relative; display: flex; align-items: center; gap: 4px; }
+        .grid-header .grid-cell:hover { background: #f1f5f9; }
+
+        #grid-body { width: fit-content; }
         
-        tr.main-row { cursor: pointer; transition: background 0.1s; }
-        tr.main-row:hover { background: #fcfdfe; }
-        tr.expanded { background: #f8fafc; }
+        .grid-row { cursor: pointer; transition: background 0.1s; background: white; }
+        .grid-row:hover { background: #fcfdfe; }
+        .grid-row.expanded { background: #f8fafc; border-bottom: none; }
         
-        .method { font-weight: 800; font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; margin-right: 10px; display: inline-block; min-width: 45px; text-align: center; }
-        .GET { background: #e3f2fd; color: #1976d2; }
-        .POST { background: #e8f5e9; color: #388e3c; }
-        .PUT { background: #fff3e0; color: #f57c00; }
-        .DELETE { background: #ffebee; color: #d32f2f; }
+        .details-pane { display: none; background: #f8fafc; border-bottom: 1px solid var(--border); }
+        .details-pane.show { display: block; }
+        .details-content { padding: 20px; }
         
-        .error-tag { color: var(--error); font-weight: 700; }
-        
-        /* Details row */
-        .details-row { display: none; background: #f8fafc; }
-        .details-row.show { display: table-row; }
-        .details-content { padding: 20px; border-bottom: 1px solid var(--border); }
         .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .details-section h4 { margin: 0 0 10px 0; font-size: 0.9rem; color: var(--secondary); border-bottom: 1px solid #dee5ed; padding-bottom: 5px; }
         .details-list { margin: 0; padding: 0; list-style: none; font-size: 0.85rem; }
@@ -85,14 +77,24 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         .details-list li:last-child { border-bottom: none; }
         .count-badge { background: #edf2f7; padding: 2px 8px; border-radius: 10px; font-weight: 600; color: var(--secondary); }
 
-        /* Tooltips */
+        .endpoint-cell { display: flex; align-items: center; }
+        .endpoint-key { overflow: hidden; text-overflow: ellipsis; }
+        
+        .method { font-weight: 800; font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; margin-right: 10px; display: inline-block; min-width: 45px; text-align: center; vertical-align: middle; }
+        .GET { background: #e3f2fd; color: #1976d2; }
+        .POST { background: #e8f5e9; color: #388e3c; }
+        .PUT { background: #fff3e0; color: #f57c00; }
+        .DELETE { background: #ffebee; color: #d32f2f; }
+        
+        .error-tag { color: var(--error); font-weight: 700; }
+
         .tooltip { position: relative; display: inline-block; margin-left: 4px; cursor: help; color: #cbd5e0; }
         .tooltip:hover { color: var(--primary); }
         .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #334155; color: #fff; text-align: center; border-radius: 6px; padding: 8px; position: absolute; z-index: 100; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.2s; font-size: 0.75rem; text-transform: none; font-weight: 400; line-height: 1.4; pointer-events: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
         
         .chevron { display: inline-block; transition: transform 0.2s; margin-right: 8px; width: 12px; height: 12px; fill: #cbd5e0; }
-        tr.expanded .chevron { transform: rotate(90deg); fill: var(--primary); }
+        .grid-row.expanded .chevron { transform: rotate(90deg); fill: var(--primary); }
     </style>
 </head>
 <body>
@@ -129,13 +131,11 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
             <div class="tab" data-target="resourceTypes">Resource Types</div>
         </div>
 
-        <div class="table-wrapper">
-            <table id="metrics-table">
-                <thead>
-                    <tr id="table-header"></tr>
-                </thead>
-                <tbody id="table-body"></tbody>
-            </table>
+        <div class="grid-wrapper">
+             <div class="grid-table" id="metrics-grid">
+                 <div class="grid-header" id="grid-header"></div>
+                 <div id="grid-body"></div>
+             </div>
         </div>
     </div>
 
@@ -150,7 +150,8 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         const columnMeta = {
             key: { label: 'Endpoint / Key', tooltip: 'The unique identifier for this aggregation group.' },
             count: { label: 'Count', tooltip: 'Total number of requests made.' },
-            avgDurationMs: { label: 'Avg', tooltip: 'The average response time in milliseconds.' },
+            avgDurationMs: { label: 'Avg', tooltip: 'The average response time in milliseconds. This represents the total time from request start to the end of the response body.' },
+            avgLoadTimeMs: { label: 'Load', tooltip: 'Resource Load Time: The time taken to download the resource body (responseEnd - responseStart).' },
             p50: { label: 'P50', tooltip: 'Median: 50% of requests were faster than this value.' },
             p95: { label: 'P95', tooltip: '95th Percentile: 95% of requests were faster than this value. Useful for identifying high-latency outliers.' },
             p99: { label: 'P99', tooltip: '99th Percentile: Only 1% of requests were slower than this value. Critical for tail latency optimization.' },
@@ -198,61 +199,60 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
                 return (valA - valB) * sortOrder;
             });
 
-            const header = document.getElementById('table-header');
-            const body = document.getElementById('table-body');
+            const header = document.getElementById('grid-header');
+            const body = document.getElementById('grid-body');
             
-            const columns = ['key', 'count', 'avgDurationMs', 'p50', 'p95', 'p99', 'totalDurationMs', 'errorCount'];
+            const columns = ['key', 'count', 'avgDurationMs', 'avgLoadTimeMs', 'p50', 'p95', 'p99', 'totalDurationMs', 'errorCount'];
 
             header.innerHTML = columns.map(k => \`
-                <th onclick="handleSort('\${k}')">
+                <div class="grid-cell" onclick="handleSort('\${k}')">
                     \${columnMeta[k].label}
-                    <span class="tooltip">ⓘ<span class="tooltiptext">\${columnMeta[k].tooltip}</span></span>
+                    <span class="tooltip" title="\${columnMeta[k].tooltip}">ⓘ</span>
                     \${sortKey === k ? (sortOrder === 1 ? '▲' : '▼') : ''}
-                </th>
+                </div>
             \`).join('');
 
             let html = '';
             data.forEach(item => {
                 const isExpanded = expandedKeys.has(item.key);
                 html += \`
-                    <tr class="main-row \${isExpanded ? 'expanded' : ''}" onclick="toggleExpand('\${item.key}', event)">
-                        <td>
+                    <div class="grid-row \${isExpanded ? 'expanded' : ''}" onclick="toggleExpand('\${item.key}', event)">
+                        <div class="grid-cell endpoint-cell">
                             <svg class="chevron" viewBox="0 0 20 20"><path d="M7 1L16 10L7 19" stroke="currentColor" stroke-width="2" fill="none"/></svg>
                             \${item.method ? \`<span class="method \${item.method}">\${item.method}</span>\` : ''}
-                            \${item.key}
-                        </td>
-                        <td>\${item.count}</td>
-                        <td>\${formatMs(item.avgDurationMs)}</td>
-                        <td>\${formatMs(item.p50)}</td>
-                        <td>\${formatMs(item.p95)}</td>
-                        <td>\${formatMs(item.p99)}</td>
-                        <td>\${formatMs(item.totalDurationMs)}</td>
-                        <td class="\${item.errorCount > 0 ? 'error-tag' : ''}">\${item.errorCount}</td>
-                    </tr>
+                            <span class="endpoint-key" title="\${item.key}">\${item.method ? item.key.replace(new RegExp(\`^\${item.method}\\\\s+\`), '') : item.key}</span>
+                        </div>
+                        <div class="grid-cell">\${item.count}</div>
+                        <div class="grid-cell">\${formatMs(item.avgDurationMs)}</div>
+                        <div class="grid-cell">\${formatMs(item.avgLoadTimeMs)}</div>
+                        <div class="grid-cell">\${formatMs(item.p50)}</div>
+                        <div class="grid-cell">\${formatMs(item.p95)}</div>
+                        <div class="grid-cell">\${formatMs(item.p99)}</div>
+                        <div class="grid-cell">\${formatMs(item.totalDurationMs)}</div>
+                        <div class="grid-cell \${item.errorCount > 0 ? 'error-tag' : ''}">\${item.errorCount}</div>
+                    </div>
                 \`;
 
                 if (isExpanded) {
                     html += \`
-                        <tr class="details-row show">
-                            <td colspan="8">
-                                <div class="details-content">
-                                    <div class="details-grid">
-                                        <div class="details-section">
-                                            <h4>Contributing Spec Files</h4>
-                                            <ul class="details-list">
-                                                \${item.specs.map(s => \`<li><span>\${s.name}</span> <span class="count-badge">\${s.count}</span></li>\`).join('')}
-                                            </ul>
-                                        </div>
-                                        <div class="details-section">
-                                            <h4>Contributing Tests</h4>
-                                            <ul class="details-list">
-                                                \${item.tests.map(t => \`<li><span>\${t.name}</span> <span class="count-badge">\${t.count}</span></li>\`).join('')}
-                                            </ul>
-                                        </div>
+                        <div class="details-pane show">
+                            <div class="details-content">
+                                <div class="details-grid">
+                                    <div class="details-section">
+                                        <h4>Contributing Spec Files</h4>
+                                        <ul class="details-list">
+                                            \${item.specs.map(s => \`<li><span>\${s.name}</span> <span class="count-badge">\${s.count}</span></li>\`).join('')}
+                                        </ul>
+                                    </div>
+                                    <div class="details-section">
+                                        <h4>Contributing Tests</h4>
+                                        <ul class="details-list">
+                                            \${item.tests.map(t => \`<li><span>\${t.name}</span> <span class="count-badge">\${t.count}</span></li>\`).join('')}
+                                        </ul>
                                     </div>
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                     \`;
                 }
             });

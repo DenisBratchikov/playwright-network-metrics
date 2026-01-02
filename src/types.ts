@@ -102,6 +102,10 @@ export interface RequestMetric {
    */
   duration: number;
   /**
+   * Resource loading time (responseEnd - responseStart) in milliseconds.
+   */
+  loadTime: number;
+  /**
    * Playwright resource type (e.g., "fetch", "xhr", "image").
    */
   resourceType: string;
@@ -152,6 +156,10 @@ export interface AggregatedMetric {
    */
   totalDurationMs: number;
   /**
+   * Total load time of all requests in this category (responseEnd - responseStart).
+   */
+  totalLoadTimeMs: number;
+  /**
    * Average duration of requests in this category.
    */
   avgDurationMs: number;
@@ -167,6 +175,10 @@ export interface AggregatedMetric {
    * 99th percentile duration.
    */
   p99: number;
+  /**
+   * Average load time of requests in this category.
+   */
+  avgLoadTimeMs: number;
   /**
    * Total number of failed requests in this category.
    */

@@ -1,6 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { Reporter, TestCase, TestResult } from "@playwright/test/reporter";
+import type {
+  FullConfig,
+  Reporter,
+  TestCase,
+  TestResult,
+} from "@playwright/test/reporter";
 import { NetworkMetricsAggregator } from "./aggregator";
 import { generateHtmlReport } from "./html-report";
 import type {
@@ -20,19 +25,26 @@ export class NetworkMetricsReporter implements Reporter {
    * Internal store for all collected request metrics from all tests.
    */
   private allMetrics: RequestMetric[] = [];
-  private config: Required<NetworkMetricsReporterConfig>;
-
   /**
-   * Initializes the reporter with configuration for output and format.
-   *
-   * @param config Configuration for output directory and HTML report generation.
+   * Configuration for the plugin.
    */
-  constructor(config: NetworkMetricsReporterConfig = {}) {
-    this.config = {
-      outDir: "playwright-report/network-metrics",
-      html: false,
-      ...config,
-    };
+  private config: Required<NetworkMetricsReporterConfig> = {
+    outDir: "playwright-report/network-metrics",
+    html: true,
+  };
+
+  onBegin(config: FullConfig) {
+    // Try to find if the reporter was configured in playwright.config.ts
+    const reporterEntry = config.reporter.find(
+      ([name]) => name === "playwright-network-metrics",
+    );
+
+    if (reporterEntry && typeof reporterEntry[1] === "object") {
+      this.config = {
+        ...this.config,
+        ...reporterEntry[1],
+      };
+    }
   }
 
   /**

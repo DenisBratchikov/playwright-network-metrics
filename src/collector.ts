@@ -120,15 +120,23 @@ export class NetworkMetricsCollector {
     const urlParts = new URL(urlWithQuery);
     const url = `${urlParts.protocol}//${urlParts.host}${urlParts.pathname}`;
 
-    // Duration is calculated as the time from the start of the response to the end of the response.
+    // Duration is calculated as the time from the start of the request to the start of the response (getting the data).
+    // https://playwright.dev/docs/api/class-request#request-timing
+    // https://developer.mozilla.org/en-US/docs/Web/API/PerformanceResourceTiming#typical_resource_timing_metrics
     const duration =
+      timing.requestStart >= 0 && timing.responseStart >= 0
+        ? timing.responseStart - timing.requestStart
+        : -1;
+
+    // Load time is the resource loading time (responseEnd - responseStart).
+    const loadTime =
       timing.responseEnd >= 0 && timing.responseStart >= 0
         ? timing.responseEnd - timing.responseStart
         : -1;
 
     if (duration < 0) {
-      // Skip requests with invalid timings (e.g. from cache or failed too early)
-      console.warn(`Invalid duration for request ${url}: ${duration}`);
+      // Skip requests with invalid timings (e.g. from cache or failed too early to measure)
+      // This is expected for some failed or aborted requests.
       return;
     }
 
@@ -138,6 +146,7 @@ export class NetworkMetricsCollector {
       method: request.method(),
       status: response?.status() ?? 0,
       duration,
+      loadTime,
       resourceType: request.resourceType(),
       failed: !response || !response.ok(),
       errorText,

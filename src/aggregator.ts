@@ -89,7 +89,9 @@ export class NetworkMetricsAggregator {
         method: m.method,
         count: 0,
         totalDurationMs: 0,
+        totalLoadTimeMs: 0,
         avgDurationMs: 0,
+        avgLoadTimeMs: 0,
         p50: 0,
         p95: 0,
         p99: 0,
@@ -102,6 +104,9 @@ export class NetworkMetricsAggregator {
 
     am.count++;
     am.totalDurationMs += m.duration;
+    if (m.loadTime >= 0) {
+      am.totalLoadTimeMs += m.loadTime;
+    }
     if (m.failed) am.errorCount++;
 
     // Track samples for percentiles
@@ -139,6 +144,7 @@ export class NetworkMetricsAggregator {
    */
   private finalizeAggregatedMetric(am: AggregatedMetric): AggregatedMetric {
     am.avgDurationMs = am.count > 0 ? am.totalDurationMs / am.count : 0;
+    am.avgLoadTimeMs = am.count > 0 ? am.totalLoadTimeMs / am.count : 0;
 
     const samples = this.samplesPerKey.get(am.key) ?? [];
     if (samples.length > 0) {

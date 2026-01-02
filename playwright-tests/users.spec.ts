@@ -4,13 +4,6 @@ test.describe("User Management", () => {
   test("should track user listing and creation", async ({ page }) => {
     await page.goto("/");
 
-    await page.route("**/api/users/list", (route) =>
-      route.fulfill({ status: 200 }),
-    );
-    await page.route("**/api/users/create", (route) =>
-      route.fulfill({ status: 201 }),
-    );
-
     // Multiple list calls
     for (let i = 0; i < 4; i++) {
       const p = page.waitForResponse("**/api/users/list");
@@ -25,10 +18,6 @@ test.describe("User Management", () => {
 
   test("should track individual user fetching", async ({ page, waitReady }) => {
     await page.goto("/");
-
-    await page.route("**/api/users/*", (route) =>
-      route.fulfill({ status: 200 }),
-    );
 
     for (const id of [1, 2, 3, 4, 5]) {
       const p = page.waitForResponse(`**/api/users/${id}`);
