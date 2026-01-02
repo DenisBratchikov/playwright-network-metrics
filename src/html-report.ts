@@ -54,13 +54,13 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
 
         .grid-wrapper { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
         .grid-table { overflow-x: auto; }
-        .grid-header, .grid-row { display: grid; grid-template-columns: minmax(300px, 4fr) 110px 100px 120px 100px 100px 100px 155px 120px; align-items: center; border-bottom: 1px solid var(--border); }
-        .grid-header { background: #f8fafc; font-weight: 700; color: var(--secondary); font-size: 0.85rem; text-transform: uppercase; width: fit-content; }
+        .grid-header, .grid-row { display: grid; grid-template-columns: minmax(300px, 4fr) 110px 160px 160px 160px 160px 120px; align-items: center; border-bottom: 1px solid var(--border); }
+        .grid-header { background: #f8fafc; font-weight: 700; color: var(--secondary); font-size: 0.85rem; text-transform: uppercase; width: fit-content; min-width: 100%; }
         .grid-cell { padding: 14px 18px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
         .grid-header .grid-cell { cursor: pointer; position: relative; display: flex; align-items: center; gap: 4px; }
         .grid-header .grid-cell:hover { background: #f1f5f9; }
 
-        #grid-body { width: fit-content; }
+        #grid-body { width: fit-content; min-width: 100%; }
         
         .grid-row { cursor: pointer; transition: background 0.1s; background: white; }
         .grid-row:hover { background: #fcfdfe; }
@@ -150,12 +150,10 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         const columnMeta = {
             key: { label: 'Endpoint / Key', tooltip: 'The unique identifier for this aggregation group.' },
             count: { label: 'Count', tooltip: 'Total number of requests made.' },
-            avgDurationMs: { label: 'Avg', tooltip: 'The average response time in milliseconds. This represents the total time from request start to the end of the response body.' },
-            avgLoadTimeMs: { label: 'Load', tooltip: 'Resource Load Time: The time taken to download the resource body (responseEnd - responseStart).' },
-            p50: { label: 'P50', tooltip: 'Median: 50% of requests were faster than this value.' },
-            p95: { label: 'P95', tooltip: '95th Percentile: 95% of requests were faster than this value. Useful for identifying high-latency outliers.' },
-            p99: { label: 'P99', tooltip: '99th Percentile: Only 1% of requests were slower than this value. Critical for tail latency optimization.' },
-            totalDurationMs: { label: 'Total Time', tooltip: 'Sum of all response times for this group.' },
+            avgLoadTimeMs: { label: 'Avg Load', tooltip: 'Resource Load Time: The time taken to download the resource body (responseEnd - responseStart).' },
+            avgDurationMs: { label: 'Avg Duration', tooltip: 'The average response time in milliseconds. This represents the total time from request start to the end of the response body.' },
+            totalLoadTimeMs: { label: 'Total Load', tooltip: 'Sum of all load times for this group.' },
+            totalDurationMs: { label: 'Total Duration', tooltip: 'Sum of all response times for this group.' },
             errorCount: { label: 'Errors', tooltip: 'Number of failed requests (non-2xx response or network error).' }
         };
 
@@ -202,7 +200,7 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
             const header = document.getElementById('grid-header');
             const body = document.getElementById('grid-body');
             
-            const columns = ['key', 'count', 'avgDurationMs', 'avgLoadTimeMs', 'p50', 'p95', 'p99', 'totalDurationMs', 'errorCount'];
+            const columns = ['key', 'count', 'avgLoadTimeMs', 'totalLoadTimeMs', 'avgDurationMs', 'totalDurationMs', 'errorCount'];
 
             header.innerHTML = columns.map(k => \`
                 <div class="grid-cell" onclick="handleSort('\${k}')">
@@ -223,11 +221,9 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
                             <span class="endpoint-key" title="\${item.key}">\${item.method ? item.key.replace(new RegExp(\`^\${item.method}\\\\s+\`), '') : item.key}</span>
                         </div>
                         <div class="grid-cell">\${item.count}</div>
-                        <div class="grid-cell">\${formatMs(item.avgDurationMs)}</div>
                         <div class="grid-cell">\${formatMs(item.avgLoadTimeMs)}</div>
-                        <div class="grid-cell">\${formatMs(item.p50)}</div>
-                        <div class="grid-cell">\${formatMs(item.p95)}</div>
-                        <div class="grid-cell">\${formatMs(item.p99)}</div>
+                        <div class="grid-cell">\${formatMs(item.totalLoadTimeMs)}</div>
+                        <div class="grid-cell">\${formatMs(item.avgDurationMs)}</div>
                         <div class="grid-cell">\${formatMs(item.totalDurationMs)}</div>
                         <div class="grid-cell \${item.errorCount > 0 ? 'error-tag' : ''}">\${item.errorCount}</div>
                     </div>

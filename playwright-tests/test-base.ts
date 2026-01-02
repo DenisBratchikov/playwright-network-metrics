@@ -13,7 +13,6 @@ export const test = base.extend<{
     });
   },
   networkMetrics: defineNetworkMetricsFixture({
-    urlMatch: "**" + "/api/" + "**",
     redactQueryParams: ["token", "secret"],
     routeGroupRules: [
       { match: "**" + "/api/users/*", group: "UserManagement" },

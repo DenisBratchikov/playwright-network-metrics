@@ -4,7 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Advanced Test App</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
     <style>
+      @font-face {
+        font-family: "DummyFont";
+        src: url("font.woff2") format("woff2");
+      }
+      body {
+        font-family: "DummyFont", sans-serif;
+      }
       button {
         margin: 5px;
         padding: 10px;
@@ -24,6 +33,15 @@
   <body>
     <h1>Advanced Network Metrics Test App</h1>
     <div id="status">Ready</div>
+    <div style="margin: 10px 0">
+      <img
+        src="image.png"
+        alt="Dummy Image"
+        width="50"
+        height="50"
+        style="border: 1px solid #ccc"
+      />
+    </div>
 
     <div>
       <button id="btn-fast">Fast API (Repeatable)</button>
