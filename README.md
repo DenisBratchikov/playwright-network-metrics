@@ -70,13 +70,15 @@ The `defineNetworkMetricsFixture` function and `NetworkMetricsReporter` accept a
 | Option              | Type                 | Default                               | Description                                          |
 | ------------------- | -------------------- | ------------------------------------- | ---------------------------------------------------- |
 | `outDir`            | `string`             | `"playwright-report/network-metrics"` | Directory where the reports will be written.         |
-| `html`              | `boolean`            | `false`                               | Whether to generate an interactive HTML report.      |
+| `html`              | `boolean`            | `true`                                | Whether to generate an interactive HTML report.      |
 | `urlMatch`          | `string \| string[]` | `"**"`                                | Glob pattern(s) to match URLs (e.g., `**/api/**`).   |
 | `resourceTypes`     | `string[]`           | `[...]`                               | List of resource types to track.                     |
 | `redactQueryParams` | `string[]`           | `[]`                                  | List of query parameters to redact from stored URLs. |
 | `redactUrl`         | `function`           | `(url) => url`                        | Custom hook to modify the URL before storage.        |
 | `routeGroupRules`   | `array`              | `[]`                                  | Rules for grouping URLs into logical categories.     |
 | `routeGroupFn`      | `function`           | `undefined`                           | Custom hook for route grouping.                      |
+
+> **Note**: If the `PLAYWRIGHT_REPORT_FOLDER` environment variable is set, the reporter will automatically adjust the output directory to be distinct inside that folder (e.g. `${PLAYWRIGHT_REPORT_FOLDER}/network-metrics`).
 
 ### Custom Route Grouping
 

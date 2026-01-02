@@ -34,9 +34,16 @@ export class NetworkMetricsReporter implements Reporter {
   };
 
   onBegin(config: FullConfig) {
+    if (process.env.PLAYWRIGHT_REPORT_FOLDER) {
+      this.config.outDir = path.join(
+        process.env.PLAYWRIGHT_REPORT_FOLDER,
+        "network-metrics"
+      );
+    }
+
     // Try to find if the reporter was configured in playwright.config.ts
     const reporterEntry = config.reporter.find(([name]) =>
-      name.includes("playwright-network-metrics"),
+      name.includes("playwright-network-metrics")
     );
 
     if (reporterEntry && typeof reporterEntry[1] === "object") {
@@ -54,7 +61,7 @@ export class NetworkMetricsReporter implements Reporter {
   onTestEnd(test: TestCase, result: TestResult) {
     // Find network metrics attachment if it exists
     const attachment = result.attachments.find(
-      (a) => a.name === "network-metrics",
+      (a) => a.name === "network-metrics"
     );
     if (attachment?.body) {
       try {
@@ -65,7 +72,7 @@ export class NetworkMetricsReporter implements Reporter {
               ...item,
               specFile: test.location.file,
               testName: test.title,
-            })),
+            }))
           );
         }
       } catch (_e) {
