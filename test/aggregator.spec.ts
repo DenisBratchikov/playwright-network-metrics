@@ -11,6 +11,7 @@ describe("NetworkMetricsAggregator", () => {
         method: "GET",
         status: 200,
         duration: 100,
+        loadTime: 50,
         resourceType: "fetch",
         failed: false,
         timestamp: Date.now(),
@@ -21,6 +22,7 @@ describe("NetworkMetricsAggregator", () => {
         method: "GET",
         status: 200,
         duration: 200,
+        loadTime: 100,
         resourceType: "fetch",
         failed: false,
         timestamp: Date.now(),
@@ -36,6 +38,7 @@ describe("NetworkMetricsAggregator", () => {
     expect(report.endpointsNormalized).toHaveLength(1);
     expect(report.endpointsNormalized[0].count).toBe(2);
     expect(report.endpointsNormalized[0].avgDurationMs).toBe(150);
+    expect(report.endpointsNormalized[0].avgLoadTimeMs).toBe(75);
 
     expect(report.endpointsExactWithQuery).toHaveLength(2);
     expect(report.endpointsExactWithQuery[0].count).toBe(1);
@@ -50,6 +53,7 @@ describe("NetworkMetricsAggregator", () => {
         method: "GET",
         status: 200,
         duration: 100,
+        loadTime: 50,
         resourceType: "fetch",
         failed: false,
         timestamp: Date.now(),
@@ -61,6 +65,7 @@ describe("NetworkMetricsAggregator", () => {
         method: "GET",
         status: 200,
         duration: 200,
+        loadTime: 100,
         resourceType: "fetch",
         failed: false,
         timestamp: Date.now(),
@@ -83,6 +88,7 @@ describe("NetworkMetricsAggregator", () => {
       method: "GET",
       status: 200,
       duration: i + 1, // 1 to 100
+      loadTime: (i + 1) / 2,
       resourceType: "fetch",
       failed: false,
       timestamp: Date.now(),

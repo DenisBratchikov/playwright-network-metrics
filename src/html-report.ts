@@ -59,14 +59,23 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         th:last-child { border-top-right-radius: 12px; }
         tr:last-child td:first-child { border-bottom-left-radius: 12px; }
         tr:last-child td:last-child { border-bottom-right-radius: 12px; }
-        th { background: #f8fafc; font-weight: 700; color: var(--secondary); font-size: 0.85rem; text-transform: uppercase; cursor: pointer; position: relative; }
+        th { background: #f8fafc; font-weight: 700; color: var(--secondary); font-size: 0.85rem; text-transform: uppercase; cursor: pointer; position: relative; white-space: nowrap; }
         th:hover { background: #f1f5f9; }
         
         tr.main-row { cursor: pointer; transition: background 0.1s; }
         tr.main-row:hover { background: #fcfdfe; }
         tr.expanded { background: #f8fafc; }
         
-        .method { font-weight: 800; font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; margin-right: 10px; display: inline-block; min-width: 45px; text-align: center; }
+        .endpoint-key {
+            max-width: 500px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .method { font-weight: 800; font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; margin-right: 10px; display: inline-block; min-width: 45px; text-align: center; vertical-align: middle; }
         .GET { background: #e3f2fd; color: #1976d2; }
         .POST { background: #e8f5e9; color: #388e3c; }
         .PUT { background: #fff3e0; color: #f57c00; }
@@ -150,7 +159,8 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         const columnMeta = {
             key: { label: 'Endpoint / Key', tooltip: 'The unique identifier for this aggregation group.' },
             count: { label: 'Count', tooltip: 'Total number of requests made.' },
-            avgDurationMs: { label: 'Avg', tooltip: 'The average response time in milliseconds.' },
+            avgDurationMs: { label: 'Avg', tooltip: 'The average response time in milliseconds. This represents the total time from request start to the end of the response body.' },
+            avgLoadTimeMs: { label: 'Load', tooltip: 'Resource Load Time: The time taken to download the resource body (responseEnd - responseStart).' },
             p50: { label: 'P50', tooltip: 'Median: 50% of requests were faster than this value.' },
             p95: { label: 'P95', tooltip: '95th Percentile: 95% of requests were faster than this value. Useful for identifying high-latency outliers.' },
             p99: { label: 'P99', tooltip: '99th Percentile: Only 1% of requests were slower than this value. Critical for tail latency optimization.' },
@@ -201,7 +211,7 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
             const header = document.getElementById('table-header');
             const body = document.getElementById('table-body');
             
-            const columns = ['key', 'count', 'avgDurationMs', 'p50', 'p95', 'p99', 'totalDurationMs', 'errorCount'];
+            const columns = ['key', 'count', 'avgDurationMs', 'avgLoadTimeMs', 'p50', 'p95', 'p99', 'totalDurationMs', 'errorCount'];
 
             header.innerHTML = columns.map(k => \`
                 <th onclick="handleSort('\${k}')">
@@ -219,10 +229,11 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
                         <td>
                             <svg class="chevron" viewBox="0 0 20 20"><path d="M7 1L16 10L7 19" stroke="currentColor" stroke-width="2" fill="none"/></svg>
                             \${item.method ? \`<span class="method \${item.method}">\${item.method}</span>\` : ''}
-                            \${item.key}
+                            <span class="endpoint-key" title="\${item.key}">\${item.key}</span>
                         </td>
                         <td>\${item.count}</td>
                         <td>\${formatMs(item.avgDurationMs)}</td>
+                        <td>\${formatMs(item.avgLoadTimeMs)}</td>
                         <td>\${formatMs(item.p50)}</td>
                         <td>\${formatMs(item.p95)}</td>
                         <td>\${formatMs(item.p99)}</td>
