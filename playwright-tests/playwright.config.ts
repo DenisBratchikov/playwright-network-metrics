@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: [
     ["list"],
     [
-      "../src/index.ts", // Pointing to the source file
+      "./plugin.ts", // Pointing to the source file
       {
         html: true,
         outDir: "playwright-report/network-metrics-report",

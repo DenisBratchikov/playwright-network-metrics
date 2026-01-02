@@ -49,7 +49,7 @@ export class NetworkMetricsCollector {
   private async handleRequestFinished(request: Request) {
     if (!this.shouldTrack(request)) return;
 
-    const response = await request.response();
+    const response = await request.response().catch(() => null);
     if (!response) return;
 
     this.addMetric(request, response);

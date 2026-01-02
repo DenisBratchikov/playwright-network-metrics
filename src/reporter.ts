@@ -34,6 +34,13 @@ export class NetworkMetricsReporter implements Reporter {
   };
 
   onBegin(config: FullConfig) {
+    if (process.env.PLAYWRIGHT_REPORT_FOLDER) {
+      this.config.outDir = path.join(
+        process.env.PLAYWRIGHT_REPORT_FOLDER,
+        "network-metrics",
+      );
+    }
+
     // Try to find if the reporter was configured in playwright.config.ts
     const reporterEntry = config.reporter.find(([name]) =>
       name.includes("playwright-network-metrics"),
