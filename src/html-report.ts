@@ -32,8 +32,8 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
             --text-muted: #7f8c8d;
             --border: #e1e8ed;
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: var(--text); margin: 0; padding: 20px; background: var(--bg); }
-        .container { max-width: 1200px; margin: 0 auto; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: var(--text); margin: 0; padding: 20px 80px; background: var(--bg); }
+        .container { margin: 0 auto; }
         h1 { color: var(--secondary); margin-bottom: 30px; font-weight: 700; }
         
         .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
@@ -52,7 +52,7 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         .tab:hover { background: #f8f9fa; }
         .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .table-wrapper { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: visible; }
+        .table-wrapper { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow-x: auto; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
         th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); }
         th:first-child { border-top-left-radius: 12px; }
@@ -98,12 +98,6 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         .details-list li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dotted #e1e8ed; }
         .details-list li:last-child { border-bottom: none; }
         .count-badge { background: #edf2f7; padding: 2px 8px; border-radius: 10px; font-weight: 600; color: var(--secondary); }
-
-        /* Tooltips */
-        .tooltip { position: relative; display: inline-block; margin-left: 4px; cursor: help; color: #cbd5e0; }
-        .tooltip:hover { color: var(--primary); }
-        .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #334155; color: #fff; text-align: center; border-radius: 6px; padding: 8px; position: absolute; z-index: 100; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.2s; font-size: 0.75rem; text-transform: none; font-weight: 400; line-height: 1.4; pointer-events: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
         
         .chevron { display: inline-block; transition: transform 0.2s; margin-right: 8px; width: 12px; height: 12px; fill: #cbd5e0; }
         tr.expanded .chevron { transform: rotate(90deg); fill: var(--primary); }
@@ -143,13 +137,11 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
             <div class="tab" data-target="resourceTypes">Resource Types</div>
         </div>
 
-        <div class="table-wrapper">
-            <table id="metrics-table">
-                <thead>
-                    <tr id="table-header"></tr>
-                </thead>
-                <tbody id="table-body"></tbody>
-            </table>
+        <div class="grid-wrapper">
+             <div class="grid-table" id="metrics-grid">
+                 <div class="grid-header" id="grid-header"></div>
+                 <div id="grid-body"></div>
+             </div>
         </div>
     </div>
 
@@ -213,62 +205,60 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
                 return (valA - valB) * sortOrder;
             });
 
-            const header = document.getElementById('table-header');
-            const body = document.getElementById('table-body');
+            const header = document.getElementById('grid-header');
+            const body = document.getElementById('grid-body');
             
             const columns = ['key', 'count', 'avgDurationMs', 'avgLoadTimeMs', 'p50', 'p95', 'p99', 'totalDurationMs', 'errorCount'];
 
             header.innerHTML = columns.map(k => \`
-                <th onclick="handleSort('\${k}')">
+                <div class="grid-cell" onclick="handleSort('\${k}')">
                     \${columnMeta[k].label}
-                    <span class="tooltip">ⓘ<span class="tooltiptext">\${columnMeta[k].tooltip}</span></span>
+                    <span class="tooltip" title="\${columnMeta[k].tooltip}">ⓘ</span>
                     \${sortKey === k ? (sortOrder === 1 ? '▲' : '▼') : ''}
-                </th>
+                </div>
             \`).join('');
 
             let html = '';
             data.forEach(item => {
                 const isExpanded = expandedKeys.has(item.key);
                 html += \`
-                    <tr class="main-row \${isExpanded ? 'expanded' : ''}" onclick="toggleExpand('\${item.key}', event)">
-                        <td class="endpoint-cell">
+                    <div class="grid-row \${isExpanded ? 'expanded' : ''}" onclick="toggleExpand('\${item.key}', event)">
+                        <div class="grid-cell endpoint-cell">
                             <svg class="chevron" viewBox="0 0 20 20"><path d="M7 1L16 10L7 19" stroke="currentColor" stroke-width="2" fill="none"/></svg>
                             \${item.method ? \`<span class="method \${item.method}">\${item.method}</span>\` : ''}
                             <span class="endpoint-key" title="\${item.key}">\${item.method ? item.key.replace(new RegExp(\`^\${item.method}\\\\s+\`), '') : item.key}</span>
-                        </td>
-                        <td>\${item.count}</td>
-                        <td>\${formatMs(item.avgDurationMs)}</td>
-                        <td>\${formatMs(item.avgLoadTimeMs)}</td>
-                        <td>\${formatMs(item.p50)}</td>
-                        <td>\${formatMs(item.p95)}</td>
-                        <td>\${formatMs(item.p99)}</td>
-                        <td>\${formatMs(item.totalDurationMs)}</td>
-                        <td class="\${item.errorCount > 0 ? 'error-tag' : ''}">\${item.errorCount}</td>
-                    </tr>
+                        </div>
+                        <div class="grid-cell">\${item.count}</div>
+                        <div class="grid-cell">\${formatMs(item.avgDurationMs)}</div>
+                        <div class="grid-cell">\${formatMs(item.avgLoadTimeMs)}</div>
+                        <div class="grid-cell">\${formatMs(item.p50)}</div>
+                        <div class="grid-cell">\${formatMs(item.p95)}</div>
+                        <div class="grid-cell">\${formatMs(item.p99)}</div>
+                        <div class="grid-cell">\${formatMs(item.totalDurationMs)}</div>
+                        <div class="grid-cell \${item.errorCount > 0 ? 'error-tag' : ''}">\${item.errorCount}</div>
+                    </div>
                 \`;
 
                 if (isExpanded) {
                     html += \`
-                        <tr class="details-row show">
-                            <td colspan="8">
-                                <div class="details-content">
-                                    <div class="details-grid">
-                                        <div class="details-section">
-                                            <h4>Contributing Spec Files</h4>
-                                            <ul class="details-list">
-                                                \${item.specs.map(s => \`<li><span>\${s.name}</span> <span class="count-badge">\${s.count}</span></li>\`).join('')}
-                                            </ul>
-                                        </div>
-                                        <div class="details-section">
-                                            <h4>Contributing Tests</h4>
-                                            <ul class="details-list">
-                                                \${item.tests.map(t => \`<li><span>\${t.name}</span> <span class="count-badge">\${t.count}</span></li>\`).join('')}
-                                            </ul>
-                                        </div>
+                        <div class="details-pane show">
+                            <div class="details-content">
+                                <div class="details-grid">
+                                    <div class="details-section">
+                                        <h4>Contributing Spec Files</h4>
+                                        <ul class="details-list">
+                                            \${item.specs.map(s => \`<li><span>\${s.name}</span> <span class="count-badge">\${s.count}</span></li>\`).join('')}
+                                        </ul>
+                                    </div>
+                                    <div class="details-section">
+                                        <h4>Contributing Tests</h4>
+                                        <ul class="details-list">
+                                            \${item.tests.map(t => \`<li><span>\${t.name}</span> <span class="count-badge">\${t.count}</span></li>\`).join('')}
+                                        </ul>
                                     </div>
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                     \`;
                 }
             });
