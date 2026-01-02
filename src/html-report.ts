@@ -66,13 +66,18 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         tr.main-row:hover { background: #fcfdfe; }
         tr.expanded { background: #f8fafc; }
         
+        .endpoint-cell {
+            white-space: nowrap;
+            max-width: 600px;
+            overflow: hidden;
+        }
+
         .endpoint-key {
-            max-width: 500px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
             display: inline-block;
             vertical-align: middle;
+            max-width: 500px;
         }
 
         .method { font-weight: 800; font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; margin-right: 10px; display: inline-block; min-width: 45px; text-align: center; vertical-align: middle; }
@@ -226,10 +231,10 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
                 const isExpanded = expandedKeys.has(item.key);
                 html += \`
                     <tr class="main-row \${isExpanded ? 'expanded' : ''}" onclick="toggleExpand('\${item.key}', event)">
-                        <td>
+                        <td class="endpoint-cell">
                             <svg class="chevron" viewBox="0 0 20 20"><path d="M7 1L16 10L7 19" stroke="currentColor" stroke-width="2" fill="none"/></svg>
                             \${item.method ? \`<span class="method \${item.method}">\${item.method}</span>\` : ''}
-                            <span class="endpoint-key" title="\${item.key}">\${item.key}</span>
+                            <span class="endpoint-key" title="\${item.key}">\${item.method ? item.key.replace(new RegExp(\`^\${item.method}\\\\s+\`), '') : item.key}</span>
                         </td>
                         <td>\${item.count}</td>
                         <td>\${formatMs(item.avgDurationMs)}</td>
