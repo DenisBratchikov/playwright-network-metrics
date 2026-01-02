@@ -38,7 +38,7 @@ export class NetworkMetricsCollector {
    */
   async attach(target: Page | BrowserContext) {
     target.on("requestfinished", (request) =>
-      this.handleRequestFinished(request)
+      this.handleRequestFinished(request),
     );
     target.on("requestfailed", (request) => this.handleRequestFailed(request));
   }
@@ -113,7 +113,7 @@ export class NetworkMetricsCollector {
   private addMetric(
     request: Request,
     response: Response | null,
-    errorText?: string
+    errorText?: string,
   ) {
     const timing = request.timing();
     const urlWithQuery = this.redactUrl(request.url());
@@ -136,6 +136,7 @@ export class NetworkMetricsCollector {
 
     if (duration < 0) {
       // Skip requests with invalid timings (e.g. from cache or failed too early to measure)
+      // This is expected for some failed or aborted requests.
       return;
     }
 

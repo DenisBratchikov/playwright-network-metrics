@@ -25,13 +25,13 @@ import type { NetworkMetricsConfig } from "./types";
  * ```
  */
 export const defineNetworkMetricsFixture: (
-  config?: NetworkMetricsConfig
+  config?: NetworkMetricsConfig,
 ) => Fixtures = (config?: NetworkMetricsConfig) => {
   return [
     async (
       { page }: { page: Page },
       use: (collector: NetworkMetricsCollector) => Promise<void>,
-      testInfo: TestInfo
+      testInfo: TestInfo,
     ) => {
       // Setup: attach collector to the page
       const collector = new NetworkMetricsCollector(config);

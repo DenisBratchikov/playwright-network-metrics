@@ -80,7 +80,7 @@ export class NetworkMetricsAggregator {
   private updateAggregate(
     map: Map<string, AggregatedMetric>,
     key: string,
-    m: RequestMetric
+    m: RequestMetric,
   ) {
     let am = map.get(key);
     if (!am) {
@@ -128,7 +128,7 @@ export class NetworkMetricsAggregator {
    */
   private updateList(
     list: Array<{ name: string; count: number }>,
-    value: string
+    value: string,
   ) {
     let entry = list.find((item) => item.name === value);
     if (!entry) {

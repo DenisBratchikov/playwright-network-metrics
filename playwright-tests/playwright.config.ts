@@ -22,7 +22,7 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
-    command: "npx -y http-server app -p 3001",
+    command: "bun run server.ts",
     port: 3001,
     reuseExistingServer: !process.env.CI,
     cwd: __dirname,
