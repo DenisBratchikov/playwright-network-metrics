@@ -53,11 +53,14 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         .grid-wrapper { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
-        .grid-header, .grid-row { display: grid; grid-template-columns: minmax(300px, 4fr) repeat(8, minmax(85px, 1fr)); align-items: center; border-bottom: 1px solid var(--border); }
-        .grid-header { background: #f8fafc; font-weight: 700; color: var(--secondary); font-size: 0.85rem; text-transform: uppercase; }
+        .grid-table { overflow-x: auto; }
+        .grid-header, .grid-row { display: grid; grid-template-columns: minmax(300px, 4fr) 110px 100px 120px 100px 100px 100px 155px 120px; align-items: center; border-bottom: 1px solid var(--border); }
+        .grid-header { background: #f8fafc; font-weight: 700; color: var(--secondary); font-size: 0.85rem; text-transform: uppercase; width: fit-content; }
         .grid-cell { padding: 14px 18px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
         .grid-header .grid-cell { cursor: pointer; position: relative; display: flex; align-items: center; gap: 4px; }
         .grid-header .grid-cell:hover { background: #f1f5f9; }
+
+        #grid-body { width: fit-content; }
         
         .grid-row { cursor: pointer; transition: background 0.1s; background: white; }
         .grid-row:hover { background: #fcfdfe; }
