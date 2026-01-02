@@ -52,34 +52,31 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         .tab:hover { background: #f8f9fa; }
         .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .table-wrapper { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow-x: auto; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
-        th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); }
-        th:first-child { border-top-left-radius: 12px; }
-        th:last-child { border-top-right-radius: 12px; }
-        tr:last-child td:first-child { border-bottom-left-radius: 12px; }
-        tr:last-child td:last-child { border-bottom-right-radius: 12px; }
-        th { background: #f8fafc; font-weight: 700; color: var(--secondary); font-size: 0.85rem; text-transform: uppercase; cursor: pointer; position: relative; white-space: nowrap; }
-        th:hover { background: #f1f5f9; }
+        .grid-wrapper { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
+        .grid-header, .grid-row { display: grid; grid-template-columns: minmax(300px, 4fr) repeat(8, minmax(85px, 1fr)); align-items: center; border-bottom: 1px solid var(--border); }
+        .grid-header { background: #f8fafc; font-weight: 700; color: var(--secondary); font-size: 0.85rem; text-transform: uppercase; }
+        .grid-cell { padding: 14px 18px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .grid-header .grid-cell { cursor: pointer; position: relative; display: flex; align-items: center; gap: 4px; }
+        .grid-header .grid-cell:hover { background: #f1f5f9; }
         
-        tr.main-row { cursor: pointer; transition: background 0.1s; }
-        tr.main-row:hover { background: #fcfdfe; }
-        tr.expanded { background: #f8fafc; }
+        .grid-row { cursor: pointer; transition: background 0.1s; background: white; }
+        .grid-row:hover { background: #fcfdfe; }
+        .grid-row.expanded { background: #f8fafc; border-bottom: none; }
         
-        .endpoint-cell {
-            white-space: nowrap;
-            max-width: 600px;
-            overflow: hidden;
-        }
+        .details-pane { display: none; background: #f8fafc; border-bottom: 1px solid var(--border); }
+        .details-pane.show { display: block; }
+        .details-content { padding: 20px; }
+        
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .details-section h4 { margin: 0 0 10px 0; font-size: 0.9rem; color: var(--secondary); border-bottom: 1px solid #dee5ed; padding-bottom: 5px; }
+        .details-list { margin: 0; padding: 0; list-style: none; font-size: 0.85rem; }
+        .details-list li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dotted #e1e8ed; }
+        .details-list li:last-child { border-bottom: none; }
+        .count-badge { background: #edf2f7; padding: 2px 8px; border-radius: 10px; font-weight: 600; color: var(--secondary); }
 
-        .endpoint-key {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: inline-block;
-            vertical-align: middle;
-            max-width: 500px;
-        }
-
+        .endpoint-cell { display: flex; align-items: center; }
+        .endpoint-key { overflow: hidden; text-overflow: ellipsis; }
+        
         .method { font-weight: 800; font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; margin-right: 10px; display: inline-block; min-width: 45px; text-align: center; vertical-align: middle; }
         .GET { background: #e3f2fd; color: #1976d2; }
         .POST { background: #e8f5e9; color: #388e3c; }
@@ -87,20 +84,14 @@ export function generateHtmlReport(report: NetworkMetricsReport): string {
         .DELETE { background: #ffebee; color: #d32f2f; }
         
         .error-tag { color: var(--error); font-weight: 700; }
-        
-        /* Details row */
-        .details-row { display: none; background: #f8fafc; }
-        .details-row.show { display: table-row; }
-        .details-content { padding: 20px; border-bottom: 1px solid var(--border); }
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .details-section h4 { margin: 0 0 10px 0; font-size: 0.9rem; color: var(--secondary); border-bottom: 1px solid #dee5ed; padding-bottom: 5px; }
-        .details-list { margin: 0; padding: 0; list-style: none; font-size: 0.85rem; }
-        .details-list li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dotted #e1e8ed; }
-        .details-list li:last-child { border-bottom: none; }
-        .count-badge { background: #edf2f7; padding: 2px 8px; border-radius: 10px; font-weight: 600; color: var(--secondary); }
+
+        .tooltip { position: relative; display: inline-block; margin-left: 4px; cursor: help; color: #cbd5e0; }
+        .tooltip:hover { color: var(--primary); }
+        .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #334155; color: #fff; text-align: center; border-radius: 6px; padding: 8px; position: absolute; z-index: 100; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.2s; font-size: 0.75rem; text-transform: none; font-weight: 400; line-height: 1.4; pointer-events: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
         
         .chevron { display: inline-block; transition: transform 0.2s; margin-right: 8px; width: 12px; height: 12px; fill: #cbd5e0; }
-        tr.expanded .chevron { transform: rotate(90deg); fill: var(--primary); }
+        .grid-row.expanded .chevron { transform: rotate(90deg); fill: var(--primary); }
     </style>
 </head>
 <body>
