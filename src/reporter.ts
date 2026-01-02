@@ -35,8 +35,8 @@ export class NetworkMetricsReporter implements Reporter {
 
   onBegin(config: FullConfig) {
     // Try to find if the reporter was configured in playwright.config.ts
-    const reporterEntry = config.reporter.find(
-      ([name]) => name === "playwright-network-metrics",
+    const reporterEntry = config.reporter.find(([name]) =>
+      name.includes("playwright-network-metrics"),
     );
 
     if (reporterEntry && typeof reporterEntry[1] === "object") {

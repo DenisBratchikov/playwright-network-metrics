@@ -1,6 +1,19 @@
 import { test } from "./test-base";
 
 test.describe("Core Functionality", () => {
+  test("should track static assets", async ({ page }) => {
+    // Wait for assets to ensure they are captured
+    const assets = [
+      "**/style.css",
+      "**/script.js",
+      "**/image.png",
+      "**/font.woff2",
+    ];
+    const promises = assets.map((u) => page.waitForResponse(u));
+    await page.goto("/");
+    await Promise.all(promises);
+  });
+
   test("should handle basic repetitive calls", async ({ page, waitReady }) => {
     await page.goto("/");
 
@@ -13,7 +26,6 @@ test.describe("Core Functionality", () => {
     }
 
     // Call error API 3 times
-    await page.route("**/api/error", (route) => route.fulfill({ status: 500 }));
     for (let i = 0; i < 3; i++) {
       const responsePromise = page.waitForResponse("**/api/error");
       await page.click("#btn-error");

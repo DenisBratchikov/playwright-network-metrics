@@ -13,7 +13,7 @@ export default defineConfig({
       "../src/index.ts", // Pointing to the source file
       {
         html: true,
-        outDir: "network-metrics-report",
+        outDir: "playwright-report/network-metrics-report",
       },
     ],
   ],

@@ -35,6 +35,29 @@ serve({
       });
     }
 
+    // Static assets
+    if (pathname.match(/\.(js|css|png|woff2)$/)) {
+      const filePath = path.join(
+        import.meta.dirname,
+        "app",
+        pathname.replace(/^\//, ""),
+      );
+      if (fs.existsSync(filePath)) {
+        const ext = path.extname(filePath);
+        const contentType =
+          {
+            ".js": "application/javascript",
+            ".css": "text/css",
+            ".png": "image/png",
+            ".woff2": "font/woff2",
+          }[ext] || "application/octet-stream";
+
+        return new Response(fs.readFileSync(filePath), {
+          headers: { "Content-Type": contentType },
+        });
+      }
+    }
+
     // API Routes
 
     // /api/fast
